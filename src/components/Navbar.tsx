@@ -13,6 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from 'react-router-dom';
+import { categoryList } from '@/data/categories';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,8 +48,8 @@ const Navbar = () => {
               <div className="py-4">
                 <div className="text-2xl font-bold text-farm-green mb-6">FarmFresh</div>
                 <nav className="flex flex-col space-y-4">
-                  <a href="#" className="text-lg py-2 border-b border-muted">Home</a>
-                  <a href="#shop" className="text-lg py-2 border-b border-muted">Shop</a>
+                  <Link to="/" className="text-lg py-2 border-b border-muted">Home</Link>
+                  <Link to="/shop" className="text-lg py-2 border-b border-muted">Shop</Link>
                   <a href="#categories" className="text-lg py-2 border-b border-muted">Categories</a>
                   <a href="#about" className="text-lg py-2 border-b border-muted">About Us</a>
                   <a href="#contact" className="text-lg py-2 border-b border-muted">Contact</a>
@@ -58,32 +60,32 @@ const Navbar = () => {
           
           {/* Logo */}
           <div className="flex-1 lg:flex-initial">
-            <a href="/" className="text-2xl font-bold text-farm-green-dark">
+            <Link to="/" className="text-2xl font-bold text-farm-green-dark">
               FarmFresh
-            </a>
+            </Link>
           </div>
           
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
-            <a href="/" className="nav-link">Home</a>
-            <a href="#shop" className="nav-link">Shop</a>
+            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/shop" className="nav-link">Shop</Link>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="nav-link">Categories</button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                {categoryList.slice(0, 6).map((category) => (
+                  <DropdownMenuItem key={category.id}>
+                    <Link to={`/shop?category=${category.name.toLowerCase()}`} className="w-full">
+                      {category.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuItem>
-                  <a href="#vegetables" className="w-full">Vegetables</a>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <a href="#fruits" className="w-full">Fruits</a>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <a href="#dairy" className="w-full">Dairy</a>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <a href="#herbs" className="w-full">Herbs</a>
+                  <Link to="/shop" className="w-full font-medium text-farm-green">
+                    View All Categories
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
