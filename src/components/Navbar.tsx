@@ -50,9 +50,8 @@ const Navbar = () => {
                 <nav className="flex flex-col space-y-4">
                   <Link to="/" className="text-lg py-2 border-b border-muted">Home</Link>
                   <Link to="/shop" className="text-lg py-2 border-b border-muted">Shop</Link>
-                  <a href="#categories" className="text-lg py-2 border-b border-muted">Categories</a>
-                  <a href="#about" className="text-lg py-2 border-b border-muted">About Us</a>
-                  <a href="#contact" className="text-lg py-2 border-b border-muted">Contact</a>
+                  <Link to="/about" className="text-lg py-2 border-b border-muted">About Us</Link>
+                  <Link to="/contact" className="text-lg py-2 border-b border-muted">Contact</Link>
                 </nav>
               </div>
             </SheetContent>
@@ -90,8 +89,8 @@ const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <a href="#about" className="nav-link">About Us</a>
-            <a href="#contact" className="nav-link">Contact</a>
+            <Link to="/about" className="nav-link">About Us</Link>
+            <Link to="/contact" className="nav-link">Contact</Link>
           </nav>
           
           {/* Actions */}
