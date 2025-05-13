@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,24 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Farm e-commerce specific colors
+				farm: {
+					green: {
+						light: '#D1E8B7',
+						DEFAULT: '#7FB069',
+						dark: '#3B5738',
+					},
+					earth: {
+						light: '#E6CCB2',
+						DEFAULT: '#B68F65',
+						dark: '#7D5A3C',
+					},
+					accent: {
+						yellow: '#F9C846',
+						red: '#E86A58',
+						blue: '#8BBBD9',
+					}
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +103,26 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out forwards'
+			},
+			fontFamily: {
+				'heading': ['Montserrat', 'sans-serif'],
+				'body': ['Open Sans', 'sans-serif'],
 			}
 		}
 	},
