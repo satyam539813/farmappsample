@@ -38,7 +38,7 @@ const ProductFilters = ({
           <li>
             <button 
               onClick={() => onCategoryChange(null)}
-              className={`text-left w-full px-2 py-1 rounded hover:bg-muted ${!activeCategory ? 'font-medium text-farm-green' : 'text-gray-600'}`}
+              className={`text-left w-full px-3 py-2 rounded-md hover:bg-[#F2FCE2] transition-colors ${!activeCategory ? 'font-medium text-farm-green bg-[#F2FCE2]' : 'text-gray-600 hover:text-farm-green'}`}
             >
               All Products
             </button>
@@ -47,8 +47,8 @@ const ProductFilters = ({
             <li key={category.id}>
               <button 
                 onClick={() => onCategoryChange(category.name)}
-                className={`text-left w-full px-2 py-1 rounded hover:bg-muted ${
-                  activeCategory === category.name ? 'font-medium text-farm-green' : 'text-gray-600'
+                className={`text-left w-full px-3 py-2 rounded-md hover:bg-[#F2FCE2] transition-colors ${
+                  activeCategory === category.name ? 'font-medium text-farm-green bg-[#F2FCE2]' : 'text-gray-600 hover:text-farm-green'
                 }`}
               >
                 {category.name}
@@ -63,7 +63,7 @@ const ProductFilters = ({
       <div>
         <h3 className="text-lg font-medium mb-3">Filters</h3>
         <div className="space-y-4">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 p-2 hover:bg-[#F2FCE2] rounded-md transition-colors">
             <Checkbox 
               id="organic" 
               checked={!!activeFilters.organic}
@@ -71,12 +71,12 @@ const ProductFilters = ({
             />
             <label
               htmlFor="organic"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
               Organic Products
             </label>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 p-2 hover:bg-[#F2FCE2] rounded-md transition-colors">
             <Checkbox 
               id="sale" 
               checked={!!activeFilters.onSale}
@@ -84,7 +84,7 @@ const ProductFilters = ({
             />
             <label
               htmlFor="sale"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
               On Sale
             </label>

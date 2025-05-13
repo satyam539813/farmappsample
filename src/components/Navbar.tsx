@@ -48,10 +48,10 @@ const Navbar = () => {
               <div className="py-4">
                 <div className="text-2xl font-bold text-farm-green mb-6">FarmFresh</div>
                 <nav className="flex flex-col space-y-4">
-                  <Link to="/" className="text-lg py-2 border-b border-muted">Home</Link>
-                  <Link to="/shop" className="text-lg py-2 border-b border-muted">Shop</Link>
-                  <Link to="/about" className="text-lg py-2 border-b border-muted">About Us</Link>
-                  <Link to="/contact" className="text-lg py-2 border-b border-muted">Contact</Link>
+                  <Link to="/" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">Home</Link>
+                  <Link to="/shop" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">Shop</Link>
+                  <Link to="/about" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">About Us</Link>
+                  <Link to="/contact" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">Contact</Link>
                 </nav>
               </div>
             </SheetContent>
@@ -76,7 +76,7 @@ const Navbar = () => {
               <DropdownMenuContent>
                 {categoryList.slice(0, 6).map((category) => (
                   <DropdownMenuItem key={category.id}>
-                    <Link to={`/shop?category=${category.name.toLowerCase()}`} className="w-full">
+                    <Link to={`/shop?category=${category.name.toLowerCase()}`} className="w-full hover:text-farm-green">
                       {category.name}
                     </Link>
                   </DropdownMenuItem>
