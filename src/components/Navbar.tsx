@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from 'react-router-dom';
 import { categoryList } from '@/data/categories';
+import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -34,7 +35,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white dark:bg-gray-900 shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Mobile Menu */}
@@ -44,14 +45,14 @@ const Navbar = () => {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px]">
+            <SheetContent side="left" className="w-[300px] scrollbar-hide">
               <div className="py-4">
                 <div className="text-2xl font-bold text-farm-green mb-6">FarmFresh</div>
                 <nav className="flex flex-col space-y-4">
-                  <Link to="/" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">Home</Link>
-                  <Link to="/shop" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">Shop</Link>
-                  <Link to="/about" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">About Us</Link>
-                  <Link to="/contact" className="text-lg py-2 px-3 rounded-md hover:bg-[#F2FCE2] hover:text-farm-green transition-colors duration-200">Contact</Link>
+                  <Link to="/" className="text-lg py-2 border-b border-muted">Home</Link>
+                  <Link to="/shop" className="text-lg py-2 border-b border-muted">Shop</Link>
+                  <Link to="/about" className="text-lg py-2 border-b border-muted">About Us</Link>
+                  <Link to="/contact" className="text-lg py-2 border-b border-muted">Contact</Link>
                 </nav>
               </div>
             </SheetContent>
@@ -59,7 +60,7 @@ const Navbar = () => {
           
           {/* Logo */}
           <div className="flex-1 lg:flex-initial">
-            <Link to="/" className="text-2xl font-bold text-farm-green-dark">
+            <Link to="/" className="text-2xl font-bold text-farm-green-dark dark:text-farm-green">
               FarmFresh
             </Link>
           </div>
@@ -76,7 +77,7 @@ const Navbar = () => {
               <DropdownMenuContent>
                 {categoryList.slice(0, 6).map((category) => (
                   <DropdownMenuItem key={category.id}>
-                    <Link to={`/shop?category=${category.name.toLowerCase()}`} className="w-full hover:text-farm-green">
+                    <Link to={`/shop?category=${category.name.toLowerCase()}`} className="w-full">
                       {category.name}
                     </Link>
                   </DropdownMenuItem>
@@ -95,6 +96,7 @@ const Navbar = () => {
           
           {/* Actions */}
           <div className="flex items-center space-x-2">
+            <ThemeToggle />
             <Button variant="ghost" size="icon" className="hidden md:flex">
               <Search className="h-5 w-5" />
             </Button>

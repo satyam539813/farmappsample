@@ -36,7 +36,7 @@ const Shop = () => {
       <Navbar />
       <main className="container mx-auto px-4 py-8 mt-20">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-farm-green-dark">Shop All Products</h1>
+          <h1 className="text-3xl font-bold text-farm-green-dark dark:text-farm-green">Shop All Products</h1>
           
           {/* Mobile filter button */}
           <div className="lg:hidden">
@@ -47,7 +47,7 @@ const Shop = () => {
                   Filters
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[85%] sm:w-[350px] overflow-y-auto">
+              <SheetContent side="left" className="w-[85%] sm:w-[350px] overflow-y-auto scrollbar-hide">
                 <div className="py-4">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">Filters</h2>
@@ -85,7 +85,7 @@ const Shop = () => {
         
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Desktop sidebar */}
-          <aside className="hidden lg:block w-64 space-y-6">
+          <aside className="hidden lg:block w-64 space-y-6 overflow-y-auto scrollbar-hide">
             <ProductFilters 
               activeCategory={activeCategory} 
               onCategoryChange={handleCategoryChange}

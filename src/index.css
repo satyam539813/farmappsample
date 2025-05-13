@@ -103,11 +103,11 @@
 
 @layer components {
   .product-card {
-    @apply rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow duration-300;
+    @apply rounded-2xl overflow-hidden bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow duration-300;
   }
   
   .nav-link {
-    @apply px-4 py-2 text-foreground/80 hover:text-farm-green hover:bg-[#F2FCE2] rounded-md transition-colors duration-200;
+    @apply px-4 py-2 text-foreground/80 hover:text-farm-green hover:bg-[#F2FCE2] dark:hover:bg-[#2A3B2A] dark:hover:text-farm-green-light rounded-md transition-colors duration-200;
   }
 
   .btn-primary {
@@ -115,10 +115,30 @@
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl font-bold mb-8 text-center text-farm-green-dark;
+    @apply text-3xl md:text-4xl font-bold mb-8 text-center text-farm-green-dark dark:text-farm-green-light;
   }
 
   .card-hover {
     @apply hover:shadow-lg hover:-translate-y-1 transition-all duration-300;
   }
+}
+
+/* Hide scrollbars */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
