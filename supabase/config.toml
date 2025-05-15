@@ -1,1 +1,8 @@
+
 project_id = "sfjkeczihhgrvfqrbudn"
+
+[auth.external.google]
+enabled = true
+
+[auth.external.facebook]
+enabled = true

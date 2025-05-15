@@ -4,6 +4,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
+import { useCart } from '@/contexts/CartContext';
+import { Link } from 'react-router-dom';
 
 // Sample product data
 const products = [
@@ -48,6 +50,12 @@ const products = [
 ];
 
 const FeaturedProducts = () => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (productId: number) => {
+    addToCart(productId);
+  };
+
   return (
     <section id="products" className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -90,7 +98,7 @@ const FeaturedProducts = () => {
                 </div>
               </CardContent>
               <CardFooter className="pt-0">
-                <Button className="w-full bg-farm-green hover:bg-farm-green-dark">
+                <Button className="w-full bg-farm-green hover:bg-farm-green-dark" onClick={() => handleAddToCart(product.id)}>
                   <ShoppingCart className="mr-2 h-4 w-4" />
                   Add to Cart
                 </Button>
@@ -99,9 +107,11 @@ const FeaturedProducts = () => {
           ))}
         </div>
         <div className="mt-12 text-center">
-          <Button variant="outline" className="px-8 py-6 border-farm-green text-farm-green rounded-full hover:bg-farm-green/10">
-            View All Products
-          </Button>
+          <Link to="/shop">
+            <Button variant="outline" className="px-8 py-6 border-farm-green text-farm-green rounded-full hover:bg-farm-green/10">
+              View All Products
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

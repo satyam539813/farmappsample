@@ -9,6 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: number
+          quantity: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: number
+          quantity?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: number
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          badge: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          discount: boolean | null
+          id: number
+          image_url: string | null
+          name: string
+          old_price: number | null
+          organic: boolean | null
+          price: number
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          discount?: boolean | null
+          id?: number
+          image_url?: string | null
+          name: string
+          old_price?: number | null
+          organic?: boolean | null
+          price: number
+          unit: string
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          discount?: boolean | null
+          id?: number
+          image_url?: string | null
+          name?: string
+          old_price?: number | null
+          organic?: boolean | null
+          price?: number
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

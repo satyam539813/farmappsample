@@ -5,7 +5,11 @@ import { ShoppingCart, Menu, Search, User, LogIn, LogOut } from "lucide-react";
 import { 
   Sheet, 
   SheetContent, 
-  SheetTrigger 
+  SheetTrigger,
+  SheetClose,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter
 } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -17,10 +21,14 @@ import { Link } from 'react-router-dom';
 import { categoryList } from '@/data/categories';
 import { ThemeToggle } from './ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
+import { Card, CardContent } from './ui/card';
+import { Separator } from './ui/separator';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, signOut } = useAuth();
+  const { cartItems, cartCount, cartTotal, removeFromCart, updateQuantity } = useCart();
   
   // Listen for scroll events to change navbar styles
   React.useEffect(() => {
@@ -142,12 +150,119 @@ const Navbar = () => {
               </Link>
             )}
             
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-farm-accent-red text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                0
-              </span>
-            </Button>
+            {/* Cart Button with Slide-out Cart */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-farm-accent-red text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[350px] sm:w-[400px]">
+                <SheetHeader>
+                  <SheetTitle>Your Cart</SheetTitle>
+                </SheetHeader>
+                
+                {cartItems.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-[60vh]">
+                    <ShoppingCart className="h-16 w-16 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium">Your cart is empty</h3>
+                    <p className="text-muted-foreground mt-2 text-center">
+                      Add items to your cart to see them here.
+                    </p>
+                    <SheetClose asChild>
+                      <Button className="mt-6 bg-farm-green hover:bg-farm-green-dark">
+                        Continue Shopping
+                      </Button>
+                    </SheetClose>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-4 mt-4 flex-1 overflow-y-auto max-h-[65vh]">
+                      {cartItems.map((item) => (
+                        <Card key={item.id} className="overflow-hidden">
+                          <CardContent className="p-3">
+                            <div className="flex gap-3">
+                              <div className="w-20 h-20">
+                                <img 
+                                  src={item.product.image_url || 'https://placehold.co/80x80?text=Product'} 
+                                  alt={item.product.name}
+                                  className="w-full h-full object-cover rounded-md"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-medium">{item.product.name}</h4>
+                                <div className="flex items-center justify-between mt-1">
+                                  <p className="text-farm-green font-medium">
+                                    ${item.product.price.toFixed(2)} / {item.product.unit}
+                                  </p>
+                                  <div className="flex items-center border rounded-md">
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon" 
+                                      className="h-8 w-8"
+                                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                    >
+                                      -
+                                    </Button>
+                                    <span className="w-8 text-center">{item.quantity}</span>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon" 
+                                      className="h-8 w-8"
+                                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                    >
+                                      +
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="flex justify-between items-center mt-2">
+                                  <p className="font-medium">
+                                    ${(item.product.price * item.quantity).toFixed(2)}
+                                  </p>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-8 hover:text-red-500 p-0"
+                                    onClick={() => removeFromCart(item.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-6">
+                      <Separator className="my-4" />
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Subtotal</span>
+                          <span>${cartTotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg">
+                          <span>Total</span>
+                          <span>${cartTotal.toFixed(2)}</span>
+                        </div>
+                      </div>
+                      
+                      <SheetFooter className="mt-6">
+                        <Button className="w-full bg-farm-green hover:bg-farm-green-dark">
+                          Checkout
+                        </Button>
+                      </SheetFooter>
+                    </div>
+                  </>
+                )}
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
