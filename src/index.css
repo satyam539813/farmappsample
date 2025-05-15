@@ -1,144 +1,106 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    --background: 60 33% 99%;
-    --foreground: 120 6% 15%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 120 6% 15%;
-
+    --card-foreground: 222.2 84% 4.9%;
+ 
     --popover: 0 0% 100%;
-    --popover-foreground: 120 6% 15%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+ 
+    --secondary: 60 4.8% 95.9%;
+    --secondary-foreground: 24 9.8% 10%;
+ 
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+ 
+    --accent: 60 4.8% 95.9%;
+    --accent-foreground: 24 9.8% 10%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
 
-    --primary: 142 37% 30%;
-    --primary-foreground: 60 33% 99%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 142.1 76.2% 36.3%;
+ 
+    --radius: 0.5rem;
 
-    --secondary: 38 75% 59%;
-    --secondary-foreground: 120 6% 15%;
-
-    --muted: 100 12% 93%;
-    --muted-foreground: 120 6% 45%;
-
-    --accent: 142 37% 95%;
-    --accent-foreground: 142 37% 30%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 60 33% 99%;
-
-    --border: 120 6% 90%;
-    --input: 120 6% 90%;
-    --ring: 142 37% 50%;
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Farm Fresh colors */
+    --farm-green: 142.1 76.2% 36.3%;
+    --farm-green-dark: 142.1 76.2% 26.3%;
+    --farm-accent-yellow: 43 96% 56%;
+    --farm-accent-red: 360 83% 62%;
+    --farm-bg-cream: 48 100% 96%;
   }
-
+ 
   .dark {
-    --background: 120 6% 10%;
-    --foreground: 60 33% 96%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 60 9.1% 97.8%;
+ 
+    --card: 222.2 84% 9.9%;
+    --card-foreground: 60 9.1% 97.8%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 60 9.1% 97.8%;
+ 
+    --primary: 142.1 70% 45%;
+    --primary-foreground: 355.7 100% 97.3%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 60 9.1% 97.8%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 60 5% 64.9%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 60 9.1% 97.8%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 9.1% 97.8%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142.1 76.2% 36.3%;
 
-    --card: 120 6% 10%;
-    --card-foreground: 60 33% 96%;
-
-    --popover: 120 6% 10%;
-    --popover-foreground: 60 33% 96%;
-
-    --primary: 142 30% 50%;
-    --primary-foreground: 120 6% 10%;
-
-    --secondary: 38 75% 59%;
-    --secondary-foreground: 120 6% 10%;
-
-    --muted: 120 6% 20%;
-    --muted-foreground: 60 33% 80%;
-
-    --accent: 142 30% 20%;
-    --accent-foreground: 142 30% 90%;
-
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 60 33% 96%;
-
-    --border: 120 6% 25%;
-    --input: 120 6% 25%;
-    --ring: 142 30% 40%;
-    
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Farm Fresh colors - dark mode variations */
+    --farm-green: 142.1 70% 45%;
+    --farm-green-dark: 142.1 76.2% 36.3%;
+    --farm-accent-yellow: 43 70% 56%;
+    --farm-accent-red: 360 83% 62%;
+    --farm-bg-cream: 48 30% 96%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground;
   }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-semibold;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
   }
 }
 
 @layer components {
-  .product-card {
-    @apply rounded-2xl overflow-hidden bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow duration-300;
-  }
-  
   .nav-link {
-    @apply px-4 py-2 text-foreground/80 hover:text-farm-green hover:bg-[#F2FCE2] dark:hover:bg-[#2A3B2A] dark:hover:text-farm-green-light rounded-md transition-colors duration-200;
+    @apply px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-secondary;
   }
-
-  .btn-primary {
-    @apply bg-farm-green text-white px-6 py-2 rounded-full hover:bg-farm-green-dark transition-colors duration-300;
-  }
-
-  .section-title {
-    @apply text-3xl md:text-4xl font-bold mb-8 text-center text-farm-green-dark dark:text-farm-green-light;
-  }
-
-  .card-hover {
-    @apply hover:shadow-lg hover:-translate-y-1 transition-all duration-300;
-  }
-}
-
-/* Hide scrollbars */
-@layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-html {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar {
-  display: none;
 }
