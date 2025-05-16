@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ImagePlus } from "lucide-react";
 import { useCart } from '@/contexts/CartContext';
 import { Link } from 'react-router-dom';
 
@@ -110,10 +110,16 @@ const FeaturedProducts = () => {
             </Card>
           ))}
         </div>
-        <div className="mt-12 text-center">
+        <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
           <Link to="/shop">
             <Button variant="outline" className="px-8 py-6 border-farm-green text-farm-green rounded-full hover:bg-farm-green/10">
               View All Products
+            </Button>
+          </Link>
+          <Link to="/image-analysis">
+            <Button className="px-8 py-6 bg-farm-green hover:bg-farm-green-dark text-white rounded-full">
+              <ImagePlus className="mr-2 h-5 w-5" />
+              AI Image Analysis
             </Button>
           </Link>
         </div>
