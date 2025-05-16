@@ -24,6 +24,7 @@ serve(async (req) => {
     }
 
     const analysisPrompt = prompt || "What is in this image?";
+    console.log(`Analyzing image with prompt: "${analysisPrompt}"`);
 
     // Call Gemini API
     const response = await fetch(

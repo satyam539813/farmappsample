@@ -59,6 +59,8 @@ const ImageUpload = () => {
     setIsAnalyzing(true);
     
     try {
+      console.log("Sending image for analysis...");
+      
       const { data, error } = await supabase.functions.invoke<ImageAnalysisResult>('analyze-image', {
         body: {
           image: selectedImage,
@@ -66,13 +68,17 @@ const ImageUpload = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw error;
+      }
       
-      if (data.error) {
+      if (data?.error) {
+        console.error("Analysis error:", data.error);
         throw new Error(data.error);
       }
       
-      setAnalysisResult(data.analysis || "No analysis returned");
+      setAnalysisResult(data?.analysis || "No analysis returned");
       
       toast({
         title: "Analysis complete",
