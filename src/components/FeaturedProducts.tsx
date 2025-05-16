@@ -52,8 +52,12 @@ const products = [
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
 
-  const handleAddToCart = (productId: number) => {
-    addToCart(productId);
+  const handleAddToCart = async (productId: number) => {
+    try {
+      await addToCart(productId);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   return (

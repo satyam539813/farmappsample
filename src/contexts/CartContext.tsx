@@ -44,29 +44,51 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase
+      // First, get the cart items
+      const { data: cartData, error: cartError } = await supabase
         .from('cart_items')
-        .select(`
-          id,
-          product_id,
-          quantity,
-          products (
-            name,
-            price,
-            image_url,
-            unit
-          )
-        `)
+        .select('id, product_id, quantity')
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (cartError) throw cartError;
+      
+      // If there are no cart items, set empty cart and return
+      if (!cartData || cartData.length === 0) {
+        setCartItems([]);
+        setIsLoading(false);
+        return;
+      }
 
-      setCartItems(data.map(item => ({
-        id: item.id,
-        product_id: item.product_id,
-        quantity: item.quantity,
-        product: item.products
-      })));
+      // Create an array of cart items with product data
+      const cartWithProducts: CartItem[] = [];
+      
+      // Fetch product details for each cart item
+      for (const item of cartData) {
+        const { data: productData, error: productError } = await supabase
+          .from('products')
+          .select('name, price, image_url, unit')
+          .eq('id', item.product_id)
+          .single();
+        
+        if (productError) {
+          console.error('Error fetching product:', productError);
+          continue;
+        }
+        
+        cartWithProducts.push({
+          id: item.id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          product: {
+            name: productData.name,
+            price: productData.price,
+            image_url: productData.image_url || '',
+            unit: productData.unit
+          }
+        });
+      }
+      
+      setCartItems(cartWithProducts);
     } catch (error: any) {
       console.error('Error fetching cart:', error);
       toast({
@@ -103,7 +125,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         
         const { error } = await supabase
           .from('cart_items')
-          .update({ quantity: newQuantity, updated_at: new Date() })
+          .update({ 
+            quantity: newQuantity,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', itemId);
 
         if (error) throw error;
@@ -113,6 +138,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         updatedItems[existingItemIndex].quantity = newQuantity;
         setCartItems(updatedItems);
       } else {
+        // First, get product details
+        const { data: product, error: productError } = await supabase
+          .from('products')
+          .select('name, price, image_url, unit')
+          .eq('id', productId)
+          .single();
+          
+        if (productError) throw productError;
+        
         // Add new item to cart
         const { data, error } = await supabase
           .from('cart_items')
@@ -121,28 +155,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             product_id: productId,
             quantity
           })
-          .select(`
-            id,
-            product_id,
-            quantity,
-            products (
-              name,
-              price,
-              image_url,
-              unit
-            )
-          `)
+          .select('id, product_id, quantity')
           .single();
 
         if (error) throw error;
 
-        // Update local state
-        setCartItems([...cartItems, {
+        // Update local state with product data
+        const newCartItem: CartItem = {
           id: data.id,
           product_id: data.product_id,
           quantity: data.quantity,
-          product: data.products
-        }]);
+          product: {
+            name: product.name,
+            price: product.price,
+            image_url: product.image_url || '',
+            unit: product.unit
+          }
+        };
+        
+        setCartItems([...cartItems, newCartItem]);
       }
 
       toast({
@@ -169,7 +200,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       const { error } = await supabase
         .from('cart_items')
-        .update({ quantity, updated_at: new Date() })
+        .update({ 
+          quantity, 
+          updated_at: new Date().toISOString() 
+        })
         .eq('id', itemId)
         .eq('user_id', user.id);
 

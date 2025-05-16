@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { products } from '@/data/products';
+import { useCart } from '@/contexts/CartContext';
 
 interface ProductGridProps {
   activeCategory: string | null;
@@ -14,6 +15,7 @@ interface ProductGridProps {
 
 const ProductGrid = ({ activeCategory, activeFilters }: ProductGridProps) => {
   const { toast } = useToast();
+  const { addToCart } = useCart();
 
   // Filter products based on selected category and filters
   const filteredProducts = products.filter(product => {
@@ -42,11 +44,16 @@ const ProductGrid = ({ activeCategory, activeFilters }: ProductGridProps) => {
     return true;
   });
 
-  const handleAddToCart = (product: any) => {
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
+  const handleAddToCart = async (product: any) => {
+    try {
+      await addToCart(product.id);
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
+      });
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   return (
