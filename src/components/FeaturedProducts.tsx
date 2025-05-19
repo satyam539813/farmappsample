@@ -1,13 +1,29 @@
 
 import React from 'react';
 import { useState } from 'react';
-import { featuredProducts } from '@/data/products';
+import { products } from '@/data/products';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/CartContext';
+
+// Define a type for our product
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  unit: string;
+  image?: string;
+  image_url?: string;
+  discount?: boolean;
+  oldPrice?: number;
+  badge?: string;
+  organic?: boolean;
+  description: string;
+}
 
 const FeaturedProducts = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -16,14 +32,14 @@ const FeaturedProducts = () => {
 
   // Filter products based on active tab
   const filteredProducts = activeTab === "all" 
-    ? featuredProducts
-    : featuredProducts.filter(product => 
+    ? products
+    : products.filter(product => 
         product.category.toLowerCase() === activeTab.toLowerCase()
       );
   
-  const categories = ["all", ...new Set(featuredProducts.map(product => product.category.toLowerCase()))];
+  const categories = ["all", ...new Set(products.map(product => product.category.toLowerCase()))];
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     addToCart(product);
     toast({
       title: "Added to cart",
@@ -41,7 +57,7 @@ const FeaturedProducts = () => {
         
         <Tabs defaultValue="all" className="w-full max-w-3xl mx-auto mb-12">
           <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
-            {categories.map((category) => (
+            {categories.map((category: string) => (
               <TabsTrigger 
                 key={category} 
                 value={category}
@@ -55,11 +71,11 @@ const FeaturedProducts = () => {
         </Tabs>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => (
+          {filteredProducts.map((product: Product) => (
             <Card key={product.id} className="overflow-hidden transition-all hover:shadow-lg">
               <div className="aspect-square overflow-hidden">
                 <img 
-                  src={product.image_url || "/placeholder.svg"} 
+                  src={product.image || product.image_url || "/placeholder.svg"} 
                   alt={product.name} 
                   className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
