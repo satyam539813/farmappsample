@@ -56,12 +56,12 @@ const FeaturedProducts = () => {
         </p>
         
         <Tabs defaultValue="all" className="w-full max-w-3xl mx-auto mb-12">
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
+          <TabsList className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8">
             {categories.map((category: string) => (
               <TabsTrigger 
                 key={category} 
                 value={category}
-                className="capitalize"
+                className="capitalize px-5 py-2.5 rounded-lg font-medium"
                 onClick={() => setActiveTab(category)}
               >
                 {category}
@@ -93,7 +93,7 @@ const FeaturedProducts = () => {
                 <p className="text-sm mb-4 line-clamp-2">{product.description}</p>
                 
                 <Button 
-                  className="w-full bg-farm-green hover:bg-farm-green-dark"
+                  className="w-full bg-farm-green hover:bg-farm-green-dark rounded-md"
                   onClick={() => handleAddToCart(product)}
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
