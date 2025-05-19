@@ -11,6 +11,8 @@ type AuthContextType = {
   signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  getUserOrders: () => Promise<any[]>;
+  createOrder: (items: { productId: number; quantity: number; price: number }[]) => Promise<string | null>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -98,8 +100,95 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Function to get user's orders
+  const getUserOrders = async () => {
+    if (!user) return [];
+    
+    try {
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select(`
+          id,
+          status,
+          created_at,
+          updated_at,
+          order_items (
+            id,
+            product_id,
+            quantity,
+            price_at_purchase,
+            created_at
+          )
+        `)
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      return orders || [];
+    } catch (error: any) {
+      toast({
+        title: "Error fetching orders",
+        description: error.message,
+        variant: "destructive",
+      });
+      return [];
+    }
+  };
+
+  // Function to create a new order
+  const createOrder = async (items: { productId: number; quantity: number; price: number }[]) => {
+    if (!user) return null;
+    
+    try {
+      // Begin a transaction by inserting a new order
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert({ user_id: user.id })
+        .select('id')
+        .single();
+      
+      if (orderError) throw orderError;
+      
+      // Insert all order items
+      const orderItems = items.map(item => ({
+        order_id: orderData.id,
+        product_id: item.productId,
+        quantity: item.quantity,
+        price_at_purchase: item.price
+      }));
+      
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+      
+      if (itemsError) throw itemsError;
+      
+      toast({
+        title: "Order created successfully",
+        description: "Your order has been placed!",
+      });
+      
+      return orderData.id;
+    } catch (error: any) {
+      toast({
+        title: "Error creating order",
+        description: error.message,
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user, isLoading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ 
+      session, 
+      user, 
+      isLoading, 
+      signUp, 
+      signIn, 
+      signOut, 
+      getUserOrders, 
+      createOrder 
+    }}>
       {children}
     </AuthContext.Provider>
   );

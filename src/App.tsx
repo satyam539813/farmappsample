@@ -13,6 +13,7 @@ import ContactUs from "./pages/ContactUs";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import ImageAnalysis from "./pages/ImageAnalysis";
+import OrderHistory from "./pages/OrderHistory";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/image-analysis" element={<ImageAnalysis />} />
+              <Route path="/orders" element={<OrderHistory />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
