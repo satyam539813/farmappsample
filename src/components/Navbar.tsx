@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Menu, Search, User, LogIn, LogOut } from "lucide-react";
@@ -63,13 +64,16 @@ const Navbar = () => {
                   <Link to="/about" className="text-lg py-2 border-b border-muted">About Us</Link>
                   <Link to="/contact" className="text-lg py-2 border-b border-muted">Contact</Link>
                   {user ? (
-                    <button 
-                      onClick={() => signOut()} 
-                      className="text-lg py-2 border-b border-muted flex items-center"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Sign Out
-                    </button>
+                    <>
+                      <Link to="/orders" className="text-lg py-2 border-b border-muted">Orders</Link>
+                      <button 
+                        onClick={() => signOut()} 
+                        className="text-lg py-2 border-b border-muted flex items-center"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </button>
+                    </>
                   ) : (
                     <Link to="/auth" className="text-lg py-2 border-b border-muted flex items-center">
                       <LogIn className="h-4 w-4 mr-2" />
@@ -199,7 +203,7 @@ const Navbar = () => {
                                 <h4 className="font-medium">{item.product.name}</h4>
                                 <div className="flex items-center justify-between mt-1">
                                   <p className="text-farm-green font-medium">
-                                    ${item.product.price.toFixed(2)} / {item.product.unit}
+                                    ${item.product?.price ? item.product.price.toFixed(2) : '0.00'} / {item.product?.unit || 'unit'}
                                   </p>
                                   <div className="flex items-center border rounded-md">
                                     <Button 
@@ -223,7 +227,7 @@ const Navbar = () => {
                                 </div>
                                 <div className="flex justify-between items-center mt-2">
                                   <p className="font-medium">
-                                    ${(item.product.price * item.quantity).toFixed(2)}
+                                    ${(item.product?.price && item.quantity) ? (item.product.price * item.quantity).toFixed(2) : '0.00'}
                                   </p>
                                   <Button 
                                     variant="ghost" 
@@ -246,11 +250,11 @@ const Navbar = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span>Subtotal</span>
-                          <span>${cartTotal.toFixed(2)}</span>
+                          <span>${typeof cartTotal === 'number' ? cartTotal.toFixed(2) : '0.00'}</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg">
                           <span>Total</span>
-                          <span>${cartTotal.toFixed(2)}</span>
+                          <span>${typeof cartTotal === 'number' ? cartTotal.toFixed(2) : '0.00'}</span>
                         </div>
                       </div>
                       

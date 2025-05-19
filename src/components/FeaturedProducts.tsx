@@ -1,127 +1,91 @@
 
 import React from 'react';
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { useState } from 'react';
+import { featuredProducts } from '@/data/products';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, ImagePlus } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/CartContext';
-import { Link } from 'react-router-dom';
-
-// Sample product data
-const products = [
-  {
-    id: 1,
-    name: "Organic Red Apples",
-    category: "Fruits",
-    price: 4.99,
-    unit: "kg",
-    image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80",
-    discount: true,
-    oldPrice: 6.99,
-    badge: "Sale"
-  },
-  {
-    id: 2,
-    name: "Fresh Garden Spinach",
-    category: "Vegetables",
-    price: 3.49,
-    unit: "bunch",
-    image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=600&q=80",
-    organic: true
-  },
-  {
-    id: 3,
-    name: "Free Range Eggs",
-    category: "Dairy",
-    price: 5.99,
-    unit: "dozen",
-    image: "https://images.unsplash.com/photo-1598965402089-897ce52e8355?auto=format&fit=crop&w=600&q=80",
-    badge: "New"
-  },
-  {
-    id: 4,
-    name: "Heirloom Tomatoes",
-    category: "Vegetables",
-    price: 4.29,
-    unit: "lb",
-    image: "https://images.unsplash.com/photo-1518977822534-7049a61ee0c2?auto=format&fit=crop&w=600&q=80",
-    organic: true
-  }
-];
 
 const FeaturedProducts = () => {
+  const [activeTab, setActiveTab] = useState("all");
+  const { toast } = useToast();
   const { addToCart } = useCart();
 
-  const handleAddToCart = async (productId: number) => {
-    try {
-      await addToCart(productId);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
+  // Filter products based on active tab
+  const filteredProducts = activeTab === "all" 
+    ? featuredProducts
+    : featuredProducts.filter(product => 
+        product.category.toLowerCase() === activeTab.toLowerCase()
+      );
+  
+  const categories = ["all", ...new Set(featuredProducts.map(product => product.category.toLowerCase()))];
+
+  const handleAddToCart = (product: any) => {
+    addToCart(product);
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart.`,
+    });
   };
 
   return (
-    <section id="products" className="py-20 bg-white">
+    <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
-        <h2 className="section-title">Featured Products</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <Card key={product.id} className="product-card card-hover">
-              <div className="relative">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Featured Products</h2>
+        <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          Explore our hand-picked selection of fresh, organic produce delivered straight from local farms to your doorstep.
+        </p>
+        
+        <Tabs defaultValue="all" className="w-full max-w-3xl mx-auto mb-12">
+          <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
+            {categories.map((category) => (
+              <TabsTrigger 
+                key={category} 
+                value={category}
+                className="capitalize"
+                onClick={() => setActiveTab(category)}
+              >
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {filteredProducts.map((product) => (
+            <Card key={product.id} className="overflow-hidden transition-all hover:shadow-lg">
+              <div className="aspect-square overflow-hidden">
                 <img 
-                  src={product.image} 
+                  src={product.image_url || "/placeholder.svg"} 
                   alt={product.name} 
-                  className="w-full h-[200px] object-cover"
+                  className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
-                {product.badge && (
-                  <Badge className={`absolute top-2 right-2 ${
-                    product.badge === "Sale" 
-                      ? "bg-farm-accent-red" 
-                      : "bg-farm-accent-blue"
-                  }`}>
-                    {product.badge}
-                  </Badge>
-                )}
-                {product.organic && (
-                  <Badge className="absolute top-2 left-2 bg-farm-green">
-                    Organic
-                  </Badge>
-                )}
               </div>
-              <CardContent className="pt-4 pb-2">
-                <p className="text-sm text-farm-green">{product.category}</p>
-                <h3 className="font-semibold text-lg mb-1 text-farm-green-dark">{product.name}</h3>
-                <div className="flex items-center">
-                  <span className="text-xl font-bold">${product.price}</span>
-                  <span className="text-sm text-gray-500 ml-1">/ {product.unit}</span>
-                  {product.discount && (
-                    <span className="ml-2 text-sm line-through text-gray-400">
-                      ${product.oldPrice}
-                    </span>
-                  )}
+              
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-bold text-lg">{product.name}</h3>
+                    <p className="text-muted-foreground text-sm">{product.category}</p>
+                  </div>
+                  <span className="text-farm-green font-bold">${product.price.toFixed(2)}/{product.unit}</span>
                 </div>
-              </CardContent>
-              <CardFooter className="pt-0">
-                <Button className="w-full bg-farm-green hover:bg-farm-green-dark" onClick={() => handleAddToCart(product.id)}>
-                  <ShoppingCart className="mr-2 h-4 w-4" />
+                
+                <p className="text-sm mb-4 line-clamp-2">{product.description}</p>
+                
+                <Button 
+                  className="w-full bg-farm-green hover:bg-farm-green-dark"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
                   Add to Cart
                 </Button>
-              </CardFooter>
+              </CardContent>
             </Card>
           ))}
-        </div>
-        <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
-          <Link to="/shop">
-            <Button variant="outline" className="px-8 py-6 border-farm-green text-farm-green rounded-full hover:bg-farm-green/10">
-              View All Products
-            </Button>
-          </Link>
-          <Link to="/image-analysis">
-            <Button className="px-8 py-6 bg-farm-green hover:bg-farm-green-dark text-white rounded-full">
-              <ImagePlus className="mr-2 h-5 w-5" />
-              AI Image Analysis
-            </Button>
-          </Link>
         </div>
       </div>
     </section>
