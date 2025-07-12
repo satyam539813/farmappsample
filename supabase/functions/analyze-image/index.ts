@@ -15,19 +15,23 @@ serve(async (req) => {
 
   try {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    console.log('OPENAI_API_KEY exists:', !!OPENAI_API_KEY);
+    
     if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not set');
+      console.error('OPENAI_API_KEY is not set in environment variables');
+      throw new Error('OPENAI_API_KEY is not configured');
     }
 
     const { image, prompt } = await req.json();
     if (!image) {
+      console.error('No image data provided');
       throw new Error('Image data is required');
     }
 
     const analysisPrompt = prompt || "Analyze this image and describe what you see in detail. Focus on identifying objects, people, animals, text, colors, and any other notable features.";
     console.log(`Analyzing image with OpenAI Vision using prompt: "${analysisPrompt}"`);
 
-    // Call OpenAI Vision API
+    // Call OpenAI Vision API with the correct model
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -35,7 +39,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           {
             role: 'user',
@@ -59,16 +63,19 @@ serve(async (req) => {
       }),
     });
 
+    console.log('OpenAI API response status:', response.status);
+
     if (!response.ok) {
       const errorData = await response.json();
       console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
     }
 
     const analysisResult = await response.json();
     const analysis = analysisResult.choices?.[0]?.message?.content || 'No analysis available';
     
     console.log('OpenAI Vision analysis successful');
+    console.log('Analysis length:', analysis.length);
 
     return new Response(
       JSON.stringify({ 
@@ -78,6 +85,7 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error analyzing image:', error.message);
+    console.error('Error stack:', error.stack);
     return new Response(
       JSON.stringify({ error: error.message || 'Failed to analyze image' }),
       { 
