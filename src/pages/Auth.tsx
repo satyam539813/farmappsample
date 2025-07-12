@@ -16,9 +16,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2, Facebook, Mail } from "lucide-react";
+import { Loader2, Facebook, Mail, Camera, Eye } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Link } from "react-router-dom";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -33,6 +35,7 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
   const { user, signIn, signUp } = useAuth();
 
   const form = useForm<FormData>({
@@ -50,6 +53,7 @@ export default function Auth() {
         await signIn(data.email, data.password);
       } else {
         await signUp(data.email, data.password);
+        setEmailSent(true);
         setIsLogin(true);
       }
     } catch (error) {
@@ -65,7 +69,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth`,
+          redirectTo: `${window.location.origin}/`,
         }
       });
       if (error) throw error;
@@ -82,7 +86,7 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/auth`,
+          redirectTo: `${window.location.origin}/`,
         }
       });
       if (error) throw error;
@@ -107,9 +111,35 @@ export default function Auth() {
           </h1>
           <p className="text-muted-foreground text-center mb-6">
             {isLogin
-              ? "Sign in to your FarmFresh account"
+              ? "Sign in to access AI Vision Tools and more"
               : "Join FarmFresh and get fresh products delivered to your doorstep"}
           </p>
+
+          {/* Feature highlight */}
+          <div className="mb-6 p-4 bg-farm-green/5 border border-farm-green/20 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="bg-farm-green/10 p-2 rounded-lg">
+                <Eye className="h-5 w-5 text-farm-green" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-farm-green-dark">AI Vision Tools</h3>
+                <p className="text-sm text-gray-600">Upload images and get AI-powered analysis</p>
+              </div>
+            </div>
+            <Link to="/image-analysis" className="inline-flex items-center text-sm text-farm-green hover:text-farm-green-dark mt-2">
+              <Camera className="h-4 w-4 mr-1" />
+              Try without signing in →
+            </Link>
+          </div>
+
+          {emailSent && (
+            <Alert className="mb-6 border-farm-green/20">
+              <Mail className="h-4 w-4" />
+              <AlertDescription>
+                Account created! Check your email to verify your account, or sign in directly if email confirmation is disabled.
+              </AlertDescription>
+            </Alert>
+          )}
 
           <div className="space-y-4 mb-6">
             <Button 
@@ -218,6 +248,13 @@ export default function Auth() {
                 ? "Don't have an account? Sign Up"
                 : "Already have an account? Sign In"}
             </button>
+          </div>
+
+          {/* Email troubleshooting note */}
+          <div className="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-xs text-yellow-800">
+              <strong>Email not working?</strong> You may need to configure email settings in Supabase or disable email confirmation for testing.
+            </p>
           </div>
         </div>
       </div>

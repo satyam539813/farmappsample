@@ -1,277 +1,181 @@
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Menu, Search, User, LogIn, LogOut } from "lucide-react";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger,
-  SheetClose,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter
-} from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Link } from 'react-router-dom';
-import { categoryList } from '@/data/categories';
-import { ThemeToggle } from './ThemeToggle';
-import { useAuth } from '@/contexts/AuthContext';
-import { useCart } from '@/contexts/CartContext';
-import { Card, CardContent } from './ui/card';
-import { Separator } from './ui/separator';
+import { ShoppingCart, Menu, X, User, LogOut, Eye, Camera } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const { user, signOut } = useAuth();
-  const { cartItems, cartCount, cartTotal, removeFromCart, updateQuantity } = useCart();
-  
-  // Listen for scroll events to change navbar styles
-  React.useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
+  const { items } = useCart();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const navigationLinks = [
+    { path: "/", label: "Home" },
+    { path: "/shop", label: "Shop" },
+    { path: "/image-analysis", label: "AI Vision", icon: Eye },
+    { path: "/about", label: "About" },
+    { path: "/contact", label: "Contact" },
+  ];
 
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white dark:bg-gray-900 shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          {/* Mobile Menu */}
-          <Sheet>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] scrollbar-hide">
-              <div className="py-4">
-                <div className="text-2xl font-bold text-farm-green mb-6">FarmFresh</div>
-                <nav className="flex flex-col space-y-4">
-                  <Link to="/" className="text-lg py-2 border-b border-muted">Home</Link>
-                  <Link to="/shop" className="text-lg py-2 border-b border-muted">Shop</Link>
-                  <Link to="/about" className="text-lg py-2 border-b border-muted">About Us</Link>
-                  <Link to="/contact" className="text-lg py-2 border-b border-muted">Contact</Link>
-                  {user ? (
-                    <>
-                      <Link to="/orders" className="text-lg py-2 border-b border-muted">Orders</Link>
-                      <button 
-                        onClick={() => signOut()} 
-                        className="text-lg py-2 border-b border-muted flex items-center"
-                      >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sign Out
-                      </button>
-                    </>
-                  ) : (
-                    <Link to="/auth" className="text-lg py-2 border-b border-muted flex items-center">
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Sign In
-                    </Link>
-                  )}
-                </nav>
-              </div>
-            </SheetContent>
-          </Sheet>
-          
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-1 lg:flex-initial">
-            <Link to="/" className="text-2xl font-bold text-farm-green-dark dark:text-farm-green">
-              FarmFresh
-            </Link>
-          </div>
-          
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="bg-farm-green text-white p-2 rounded-lg">
+              <span className="font-bold text-lg">F</span>
+            </div>
+            <span className="text-xl font-bold text-farm-green-dark">FarmFresh</span>
+          </Link>
+
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/shop" className="nav-link">Shop</Link>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="nav-link">Categories</button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {categoryList.slice(0, 6).map((category) => (
-                  <DropdownMenuItem key={category.id}>
-                    <Link to={`/shop?category=${category.name.toLowerCase()}`} className="w-full">
-                      {category.name}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuItem>
-                  <Link to="/shop" className="w-full font-medium text-farm-green">
-                    View All Categories
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            <Link to="/about" className="nav-link">About Us</Link>
-            <Link to="/contact" className="nav-link">Contact</Link>
-          </nav>
-          
-          {/* Actions */}
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <Search className="h-5 w-5" />
-            </Button>
-            
+          <div className="hidden md:flex items-center space-x-8">
+            {navigationLinks.map((link) => {
+              const IconComponent = link.icon;
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-farm-green ${
+                    isActive(link.path)
+                      ? "text-farm-green border-b-2 border-farm-green pb-1"
+                      : "text-gray-700"
+                  }`}
+                >
+                  {IconComponent && <IconComponent className="h-4 w-4" />}
+                  <span>{link.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right side buttons */}
+          <div className="flex items-center space-x-4">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-5 w-5" />
+              <>
+                <Link to="/orders" className="hidden md:flex">
+                  <Button variant="ghost" size="sm" className="text-gray-700 hover:text-farm-green">
+                    <User className="h-4 w-4 mr-2" />
+                    Orders
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Link to="/orders" className="w-full">Orders</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => signOut()}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="hidden md:flex text-gray-700 hover:text-farm-green"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
             ) : (
-              <Link to="/auth">
-                <Button variant="ghost" size="icon" className="hidden md:flex">
-                  <LogIn className="h-5 w-5" />
+              <Link to="/auth" className="hidden md:flex">
+                <Button variant="ghost" size="sm" className="text-gray-700 hover:text-farm-green">
+                  <User className="h-4 w-4 mr-2" />
+                  Sign In
                 </Button>
               </Link>
             )}
-            
-            {/* Cart Button with Slide-out Cart */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-farm-accent-red text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[350px] sm:w-[400px]">
-                <SheetHeader>
-                  <SheetTitle>Your Cart</SheetTitle>
-                </SheetHeader>
-                
-                {cartItems.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-[60vh]">
-                    <ShoppingCart className="h-16 w-16 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium">Your cart is empty</h3>
-                    <p className="text-muted-foreground mt-2 text-center">
-                      Add items to your cart to see them here.
-                    </p>
-                    <SheetClose asChild>
-                      <Button className="mt-6 bg-farm-green hover:bg-farm-green-dark">
-                        Continue Shopping
-                      </Button>
-                    </SheetClose>
-                  </div>
-                ) : (
-                  <>
-                    <div className="space-y-4 mt-4 flex-1 overflow-y-auto max-h-[65vh]">
-                      {cartItems.map((item) => (
-                        <Card key={item.id} className="overflow-hidden">
-                          <CardContent className="p-3">
-                            <div className="flex gap-3">
-                              <div className="w-20 h-20">
-                                <img 
-                                  src={item.product.image_url || 'https://placehold.co/80x80?text=Product'} 
-                                  alt={item.product.name}
-                                  className="w-full h-full object-cover rounded-md"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <h4 className="font-medium">{item.product.name}</h4>
-                                <div className="flex items-center justify-between mt-1">
-                                  <p className="text-farm-green font-medium">
-                                    ${item.product?.price ? item.product.price.toFixed(2) : '0.00'} / {item.product?.unit || 'unit'}
-                                  </p>
-                                  <div className="flex items-center border rounded-md">
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="h-8 w-8"
-                                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                    >
-                                      -
-                                    </Button>
-                                    <span className="w-8 text-center">{item.quantity}</span>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="h-8 w-8"
-                                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                    >
-                                      +
-                                    </Button>
-                                  </div>
-                                </div>
-                                <div className="flex justify-between items-center mt-2">
-                                  <p className="font-medium">
-                                    ${(item.product?.price && item.quantity) ? (item.product.price * item.quantity).toFixed(2) : '0.00'}
-                                  </p>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="h-8 hover:text-red-500 p-0"
-                                    onClick={() => removeFromCart(item.id)}
-                                  >
-                                    Remove
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                    
-                    <div className="mt-6">
-                      <Separator className="my-4" />
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span>Subtotal</span>
-                          <span>${typeof cartTotal === 'number' ? cartTotal.toFixed(2) : '0.00'}</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-lg">
-                          <span>Total</span>
-                          <span>${typeof cartTotal === 'number' ? cartTotal.toFixed(2) : '0.00'}</span>
-                        </div>
-                      </div>
-                      
-                      <SheetFooter className="mt-6">
-                        <Button className="w-full bg-farm-green hover:bg-farm-green-dark">
-                          Checkout
-                        </Button>
-                      </SheetFooter>
-                    </div>
-                  </>
+
+            {/* Cart button */}
+            <Link to="/shop" className="relative">
+              <Button variant="ghost" size="sm" className="text-gray-700 hover:text-farm-green">
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-farm-green text-white text-xs px-1.5 py-0.5 rounded-full min-w-[1.25rem] h-5 flex items-center justify-center">
+                    {itemCount}
+                  </Badge>
                 )}
-              </SheetContent>
-            </Sheet>
+              </Button>
+            </Link>
+
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t bg-white pb-4">
+            <div className="flex flex-col space-y-2 pt-4">
+              {navigationLinks.map((link) => {
+                const IconComponent = link.icon;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium transition-colors hover:text-farm-green hover:bg-gray-50 ${
+                      isActive(link.path) ? "text-farm-green bg-farm-green/5" : "text-gray-700"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {IconComponent && <IconComponent className="h-4 w-4" />}
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+              
+              {user ? (
+                <>
+                  <Link
+                    to="/orders"
+                    className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-farm-green hover:bg-gray-50"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Orders</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-farm-green hover:bg-gray-50 w-full text-left"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-farm-green hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <User className="h-4 w-4" />
+                  <span>Sign In</span>
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
-    </header>
+    </nav>
   );
 };
 
