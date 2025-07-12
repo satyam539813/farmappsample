@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,11 +8,11 @@ import { Badge } from "@/components/ui/badge";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
-  const { items } = useCart();
+  const { cartItems } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSignOut = async () => {
     try {
