@@ -28,7 +28,7 @@ serve(async (req) => {
       throw new Error('Image data is required');
     }
 
-    const analysisPrompt = prompt || "Analyze this agricultural/crop image with focus on: 1) Crop identification and variety, 2) Growth stage and health assessment, 3) Pest/disease detection, 4) Soil conditions, 5) Irrigation needs, 6) Harvest readiness, 7) Yield estimation, 8) Recommendations for improvement. Provide specific, actionable insights for farmers.";
+    const analysisPrompt = prompt || "Analyze this agricultural image briefly: 1) Crop type, 2) Health status, 3) Growth stage, 4) Visible issues, 5) Recommendations. Be concise.";
     console.log(`Analyzing image with OpenAI Vision using prompt: "${analysisPrompt}"`);
 
     // Call OpenRouter API with DeepSeek model
@@ -52,14 +52,14 @@ serve(async (req) => {
                 type: 'image_url',
                 image_url: {
                   url: image,
-                  detail: 'high'
+                  detail: 'low'
                 }
               }
             ]
           }
         ],
-        max_tokens: 1000,
-        temperature: 0.3
+        max_tokens: 500,
+        temperature: 0.1
       }),
     });
 

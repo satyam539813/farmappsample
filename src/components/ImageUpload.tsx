@@ -15,7 +15,7 @@ interface ImageAnalysisResult {
 const ImageUpload = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [customPrompt, setCustomPrompt] = useState("Analyze this agricultural/crop image with focus on: 1) Crop identification and variety, 2) Growth stage and health assessment, 3) Pest/disease detection, 4) Soil conditions, 5) Irrigation needs, 6) Harvest readiness, 7) Yield estimation, 8) Recommendations for improvement. Provide specific, actionable insights for farmers.");
+  const [customPrompt, setCustomPrompt] = useState("Analyze this agricultural image briefly: 1) Crop type, 2) Health status, 3) Growth stage, 4) Visible issues, 5) Recommendations. Be concise.");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const { toast } = useToast();
