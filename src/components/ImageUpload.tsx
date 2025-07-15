@@ -15,7 +15,7 @@ interface ImageAnalysisResult {
 const ImageUpload = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [customPrompt, setCustomPrompt] = useState("Analyze this image and describe what you see in detail. Focus on identifying objects, people, animals, text, colors, and any other notable features.");
+  const [customPrompt, setCustomPrompt] = useState("Analyze this agricultural/crop image with focus on: 1) Crop identification and variety, 2) Growth stage and health assessment, 3) Pest/disease detection, 4) Soil conditions, 5) Irrigation needs, 6) Harvest readiness, 7) Yield estimation, 8) Recommendations for improvement. Provide specific, actionable insights for farmers.");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const { toast } = useToast();
@@ -185,16 +185,48 @@ const ImageUpload = () => {
           )}
 
           {analysisResult && (
-            <div className="mt-6 border-2 border-farm-green/20 rounded-lg p-6 bg-farm-green/5">
-              <h3 className="font-semibold text-farm-green-dark mb-3 flex items-center text-lg">
-                <Eye className="mr-2 h-5 w-5" />
-                AI Vision Analysis Results
-              </h3>
-              <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-line text-gray-700 leading-relaxed">
-                  {analysisResult}
-                </div>
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center mb-4">
+                <Eye className="h-5 w-5 text-farm-green mr-2" />
+                <h3 className="text-lg font-semibold text-farm-green-dark">Crop Analysis Results</h3>
               </div>
+              
+              <div className="grid gap-4 md:grid-cols-2">
+                {analysisResult.split(/(?=\d+\))/g).filter(section => section.trim()).map((section, index) => {
+                  const lines = section.trim().split('\n').filter(line => line.trim());
+                  const title = lines[0]?.replace(/^\d+\)\s*/, '').split(':')[0] || `Analysis ${index + 1}`;
+                  const content = lines.slice(1).join('\n') || lines[0]?.split(':').slice(1).join(':') || section;
+                  
+                  return (
+                    <div key={index} className="bg-white rounded-xl border border-farm-green/10 p-4 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-farm-green/10 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-semibold text-farm-green">{index + 1}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-farm-green-dark mb-2 leading-tight">
+                            {title}
+                          </h4>
+                          <p className="text-sm text-gray-600 leading-relaxed">
+                            {content.trim()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Full analysis fallback if parsing fails */}
+              {analysisResult.split(/(?=\d+\))/g).filter(section => section.trim()).length <= 1 && (
+                <div className="bg-white rounded-xl border border-farm-green/10 p-6 shadow-sm">
+                  <div className="prose max-w-none">
+                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
+                      {analysisResult}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

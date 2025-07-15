@@ -28,7 +28,7 @@ serve(async (req) => {
       throw new Error('Image data is required');
     }
 
-    const analysisPrompt = prompt || "Analyze this image and describe what you see in detail. Focus on identifying objects, people, animals, text, colors, and any other notable features.";
+    const analysisPrompt = prompt || "Analyze this agricultural/crop image with focus on: 1) Crop identification and variety, 2) Growth stage and health assessment, 3) Pest/disease detection, 4) Soil conditions, 5) Irrigation needs, 6) Harvest readiness, 7) Yield estimation, 8) Recommendations for improvement. Provide specific, actionable insights for farmers.";
     console.log(`Analyzing image with OpenAI Vision using prompt: "${analysisPrompt}"`);
 
     // Call OpenRouter API with DeepSeek model
