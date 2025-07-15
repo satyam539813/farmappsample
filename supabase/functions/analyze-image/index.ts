@@ -31,15 +31,15 @@ serve(async (req) => {
     const analysisPrompt = prompt || "Analyze this image and describe what you see in detail. Focus on identifying objects, people, animals, text, colors, and any other notable features.";
     console.log(`Analyzing image with OpenAI Vision using prompt: "${analysisPrompt}"`);
 
-    // Call OpenAI Vision API with the correct model
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Call OpenRouter API with DeepSeek model
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'deepseek/deepseek-r1-0528',
         messages: [
           {
             role: 'user',
