@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Upload, Eye, Camera } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
+import { Loader2, Upload, Eye, Camera, CheckCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,8 +15,8 @@ interface ImageAnalysisResult {
 const ImageUpload = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [customPrompt, setCustomPrompt] = useState("Analyze this agricultural image briefly: 1) Crop type, 2) Health status, 3) Growth stage, 4) Visible issues, 5) Recommendations. Be concise.");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -56,6 +56,23 @@ const ImageUpload = () => {
     }
   };
 
+  // Progress simulation
+  useEffect(() => {
+    if (isAnalyzing) {
+      setAnalysisProgress(0);
+      const interval = setInterval(() => {
+        setAnalysisProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(interval);
+            return 95;
+          }
+          return prev + Math.random() * 15;
+        });
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [isAnalyzing]);
+
   const analyzeImage = async () => {
     if (!selectedImage) {
       toast({
@@ -67,6 +84,7 @@ const ImageUpload = () => {
     }
 
     setIsAnalyzing(true);
+    setAnalysisProgress(0);
     
     try {
       console.log("Sending image for OpenAI Vision analysis...");
@@ -74,7 +92,7 @@ const ImageUpload = () => {
       const { data, error } = await supabase.functions.invoke<ImageAnalysisResult>('analyze-image', {
         body: {
           image: selectedImage,
-          prompt: customPrompt || "Analyze this image and describe what you see in detail."
+          prompt: "Analyze this agricultural image briefly: 1) Crop type, 2) Health status, 3) Growth stage, 4) Visible issues, 5) Recommendations. Be concise."
         }
       });
 
@@ -88,21 +106,31 @@ const ImageUpload = () => {
         throw new Error(data.error);
       }
       
-      setAnalysisResult(data?.analysis || "No analysis returned");
+      // Complete progress
+      setAnalysisProgress(100);
       
-      toast({
-        title: "Analysis complete",
-        description: "Image has been successfully analyzed with AI vision.",
-      });
+      // Small delay to show completion
+      setTimeout(() => {
+        setAnalysisResult(data?.analysis || "No analysis returned");
+        
+        toast({
+          title: "Analysis complete",
+          description: "Image has been successfully analyzed with AI vision.",
+        });
+      }, 500);
+      
     } catch (error) {
       console.error("Error analyzing image:", error);
+      setAnalysisProgress(0);
       toast({
         title: "Analysis failed",
         description: error instanceof Error ? error.message : "Failed to analyze image",
         variant: "destructive"
       });
     } finally {
-      setIsAnalyzing(false);
+      setTimeout(() => {
+        setIsAnalyzing(false);
+      }, 500);
     }
   };
 
@@ -147,21 +175,29 @@ const ImageUpload = () => {
                 />
               </div>
               
-              <div className="space-y-2">
-                <label htmlFor="prompt" className="text-sm font-medium text-gray-700 block">
-                  Analysis prompt (customize what you want to know)
-                </label>
-                <Textarea
-                  id="prompt"
-                  placeholder="What would you like to know about this image?"
-                  value={customPrompt}
-                  onChange={(e) => setCustomPrompt(e.target.value)}
-                  className="min-h-[100px] border-gray-300 focus:border-farm-green focus:ring-farm-green"
-                />
-                <p className="text-xs text-gray-500">
-                  Be specific about what you want to detect or analyze in the image
-                </p>
-              </div>
+              {/* Progress Bar */}
+              {isAnalyzing && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-farm-green-dark">
+                      {analysisProgress < 100 ? 'Analyzing...' : 'Analysis Complete!'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {Math.round(analysisProgress)}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={analysisProgress} 
+                    className="w-full h-3 bg-gray-200 rounded-full overflow-hidden"
+                  />
+                  {analysisProgress === 100 && (
+                    <div className="flex items-center justify-center text-farm-green">
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                      <span className="font-medium">Analyzed Successfully!</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <Button 
                 onClick={analyzeImage} 
