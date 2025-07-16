@@ -185,48 +185,42 @@ const ImageUpload = () => {
           )}
 
           {analysisResult && (
-            <div className="mt-6 space-y-4">
-              <div className="flex items-center mb-4">
-                <Eye className="h-5 w-5 text-farm-green mr-2" />
-                <h3 className="text-lg font-semibold text-farm-green-dark">Crop Analysis Results</h3>
+            <div className="mt-8 space-y-6">
+              <div className="flex items-center mb-6">
+                <Eye className="h-6 w-6 text-farm-green mr-3" />
+                <h3 className="text-xl font-bold text-farm-green-dark font-serif">Crop Analysis Results</h3>
               </div>
               
-              <div className="grid gap-4 md:grid-cols-2">
-                {analysisResult.split(/(?=\d+\))/g).filter(section => section.trim()).map((section, index) => {
-                  const lines = section.trim().split('\n').filter(line => line.trim());
-                  const title = lines[0]?.replace(/^\d+\)\s*/, '').split(':')[0] || `Analysis ${index + 1}`;
-                  const content = lines.slice(1).join('\n') || lines[0]?.split(':').slice(1).join(':') || section;
-                  
-                  return (
-                    <div key={index} className="bg-white rounded-xl border border-farm-green/10 p-4 shadow-sm hover:shadow-md transition-shadow">
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-farm-green/10 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-semibold text-farm-green">{index + 1}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-farm-green-dark mb-2 leading-tight">
-                            {title}
-                          </h4>
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            {content.trim()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              
-              {/* Full analysis fallback if parsing fails */}
-              {analysisResult.split(/(?=\d+\))/g).filter(section => section.trim()).length <= 1 && (
-                <div className="bg-white rounded-xl border border-farm-green/10 p-6 shadow-sm">
-                  <div className="prose max-w-none">
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
-                      {analysisResult}
-                    </p>
+              <div className="bg-gradient-to-br from-farm-green/5 to-farm-green-dark/5 rounded-2xl border-2 border-farm-green/20 p-8 shadow-xl transition-all duration-500 ease-in-out hover:shadow-2xl hover:border-farm-green/30">
+                <div className="space-y-6">
+                  <div className="font-serif font-bold text-farm-green-dark text-lg leading-relaxed whitespace-pre-wrap transition-all duration-300 ease-in-out">
+                    {analysisResult.replace(/\*/g, '').trim().split('\n').map((line, index) => {
+                      const trimmedLine = line.trim();
+                      if (!trimmedLine) return null;
+                      
+                      // Check if line starts with a number followed by )
+                      const isNumberedPoint = /^\d+\)/.test(trimmedLine);
+                      
+                      if (isNumberedPoint) {
+                        return (
+                          <div key={index} className="mb-4 p-4 bg-white/60 rounded-lg border-l-4 border-farm-green transition-all duration-300 ease-in-out hover:bg-white/80 hover:shadow-md">
+                            <div className="font-bold text-farm-green-dark mb-2">
+                              {trimmedLine}
+                            </div>
+                          </div>
+                        );
+                      } else if (trimmedLine.length > 0) {
+                        return (
+                          <div key={index} className="ml-4 mb-2 text-gray-700 leading-relaxed">
+                            {trimmedLine}
+                          </div>
+                        );
+                      }
+                      return null;
+                    }).filter(Boolean)}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           )}
         </div>
