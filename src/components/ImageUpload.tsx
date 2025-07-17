@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Upload, Eye, Camera, CheckCircle } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2, Upload, Eye, Camera, CheckCircle, Sparkles, Cpu, Image as ImageIcon } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -18,45 +19,70 @@ const ImageUpload = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   const { toast } = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid file type",
-          description: "Please select an image file.",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      // Check file size (limit to 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: "Please select an image smaller than 10MB.",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      setImageFile(file);
-      
-      // Create a preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      
-      // Reset analysis when new image is selected
-      setAnalysisResult(null);
+      processFile(file);
     }
   };
 
-  // Progress simulation
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const processFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Check file size (limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 10MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setImageFile(file);
+    
+    // Create a preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    
+    // Reset analysis when new image is selected
+    setAnalysisResult(null);
+  };
+
+  // Progress simulation with smoother animation
   useEffect(() => {
     if (isAnalyzing) {
       setAnalysisProgress(0);
@@ -66,9 +92,9 @@ const ImageUpload = () => {
             clearInterval(interval);
             return 95;
           }
-          return prev + Math.random() * 15;
+          return prev + Math.random() * 8 + 2;
         });
-      }, 200);
+      }, 150);
       return () => clearInterval(interval);
     }
   }, [isAnalyzing]);
@@ -87,7 +113,7 @@ const ImageUpload = () => {
     setAnalysisProgress(0);
     
     try {
-      console.log("Sending image for OpenAI Vision analysis...");
+      console.log("Sending image for AI Vision analysis...");
       
       const { data, error } = await supabase.functions.invoke<ImageAnalysisResult>('analyze-image', {
         body: {
@@ -109,7 +135,7 @@ const ImageUpload = () => {
       // Complete progress
       setAnalysisProgress(100);
       
-      // Small delay to show completion
+      // Small delay to show completion with smooth transition
       setTimeout(() => {
         setAnalysisResult(data?.analysis || "No analysis returned");
         
@@ -117,7 +143,7 @@ const ImageUpload = () => {
           title: "Analysis complete",
           description: "Image has been successfully analyzed with AI vision.",
         });
-      }, 500);
+      }, 800);
       
     } catch (error) {
       console.error("Error analyzing image:", error);
@@ -130,137 +156,196 @@ const ImageUpload = () => {
     } finally {
       setTimeout(() => {
         setIsAnalyzing(false);
-      }, 500);
+      }, 800);
     }
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-        <div className="bg-gradient-to-r from-farm-green to-farm-green-dark p-6">
-          <h2 className="text-2xl font-bold text-white mb-2 flex items-center">
-            <Eye className="mr-3 h-6 w-6" />
-            AI Vision Analysis
-          </h2>
-          <p className="text-farm-green-light">
-            Upload any image and get detailed AI-powered analysis and insights
-          </p>
-        </div>
-        
-        <div className="p-6 space-y-6">
-          <div className="space-y-2">
-            <label htmlFor="picture" className="text-sm font-medium text-gray-700 flex items-center">
-              <Camera className="mr-2 h-4 w-4" />
-              Choose an image to analyze
-            </label>
-            <Input
-              id="picture"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="cursor-pointer border-2 border-dashed border-gray-300 hover:border-farm-green transition-colors p-4 rounded-lg"
-            />
-            <p className="text-xs text-gray-500">
-              Supports JPG, PNG, GIF, WebP. Maximum file size: 10MB
+    <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
+      {/* Upload Section */}
+      <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-background to-muted/20">
+        <CardContent className="p-8">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 animate-pulse">
+              <ImageIcon className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-2xl font-semibold mb-2">Upload Your Image</h3>
+            <p className="text-muted-foreground">
+              Drag and drop or click to select an image for AI analysis
             </p>
           </div>
 
-          {selectedImage && (
-            <div className="space-y-6">
-              <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+          <div
+            className={`relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 cursor-pointer group ${
+              isDragOver 
+                ? 'border-primary bg-primary/5 scale-[1.02]' 
+                : 'border-muted-foreground/25 hover:border-primary hover:bg-muted/30'
+            }`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => document.getElementById('file-input')?.click()}
+          >
+            <Input
+              id="file-input"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            
+            <div className="text-center space-y-4">
+              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full transition-all duration-300 ${
+                isDragOver ? 'bg-primary text-primary-foreground scale-110' : 'bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground'
+              }`}>
+                <Upload className="h-10 w-10" />
+              </div>
+              
+              <div>
+                <p className="text-lg font-medium mb-1">
+                  {isDragOver ? 'Drop your image here' : 'Click to upload or drag and drop'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Supports JPG, PNG, GIF, WebP • Maximum 10MB
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Image Preview and Analysis */}
+      {selectedImage && (
+        <div className="space-y-8 animate-fade-in">
+          {/* Image Preview */}
+          <Card className="overflow-hidden border-0 shadow-xl">
+            <CardContent className="p-0">
+              <div className="aspect-video bg-muted rounded-lg overflow-hidden">
                 <img 
                   src={selectedImage} 
                   alt="Selected preview" 
-                  className="w-full max-h-[400px] object-contain"
+                  className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
                 />
               </div>
-              
-              {/* Progress Bar */}
-              {isAnalyzing && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-farm-green-dark">
-                      {analysisProgress < 100 ? 'Analyzing...' : 'Analysis Complete!'}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {Math.round(analysisProgress)}%
-                    </span>
-                  </div>
-                  <Progress 
-                    value={analysisProgress} 
-                    className="w-full h-3 bg-gray-200 rounded-full overflow-hidden"
-                  />
-                  {analysisProgress === 100 && (
-                    <div className="flex items-center justify-center text-farm-green">
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      <span className="font-medium">Analyzed Successfully!</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <Button 
-                onClick={analyzeImage} 
-                className="w-full bg-farm-green hover:bg-farm-green-dark text-white font-medium py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
-                disabled={isAnalyzing}
-                size="lg"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Analyzing with AI Vision...
-                  </>
-                ) : (
-                  <>
-                    <Eye className="mr-2 h-5 w-5" />
-                    Analyze Image with AI
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
-
-          {analysisResult && (
-            <div className="mt-8 space-y-6">
-              <div className="flex items-center mb-6">
-                <Eye className="h-6 w-6 text-farm-green mr-3" />
-                <h3 className="text-xl font-bold text-farm-green-dark font-serif">Crop Analysis Results</h3>
-              </div>
-              
-              <div className="bg-gradient-to-br from-farm-green/5 to-farm-green-dark/5 rounded-2xl border-2 border-farm-green/20 p-8 shadow-xl transition-all duration-500 ease-in-out hover:shadow-2xl hover:border-farm-green/30">
+            </CardContent>
+          </Card>
+          
+          {/* Analysis Progress */}
+          {isAnalyzing && (
+            <Card className="border-0 shadow-lg animate-scale-in">
+              <CardContent className="p-6">
                 <div className="space-y-6">
-                  <div className="font-serif font-bold text-farm-green-dark text-lg leading-relaxed whitespace-pre-wrap transition-all duration-300 ease-in-out">
-                    {analysisResult.replace(/\*/g, '').trim().split('\n').map((line, index) => {
-                      const trimmedLine = line.trim();
-                      if (!trimmedLine) return null;
-                      
-                      // Check if line starts with a number followed by )
-                      const isNumberedPoint = /^\d+\)/.test(trimmedLine);
-                      
-                      if (isNumberedPoint) {
-                        return (
-                          <div key={index} className="mb-4 p-4 bg-white/60 rounded-lg border-l-4 border-farm-green transition-all duration-300 ease-in-out hover:bg-white/80 hover:shadow-md">
-                            <div className="font-bold text-farm-green-dark mb-2">
-                              {trimmedLine}
-                            </div>
-                          </div>
-                        );
-                      } else if (trimmedLine.length > 0) {
-                        return (
-                          <div key={index} className="ml-4 mb-2 text-gray-700 leading-relaxed">
-                            {trimmedLine}
-                          </div>
-                        );
-                      }
-                      return null;
-                    }).filter(Boolean)}
+                  <div className="flex items-center justify-center space-x-3">
+                    <div className="relative">
+                      <Cpu className="h-8 w-8 text-primary animate-pulse" />
+                      <Sparkles className="h-4 w-4 text-primary absolute -top-1 -right-1 animate-ping" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">AI Analysis in Progress</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Processing your image with advanced AI vision...
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">
+                        {analysisProgress < 100 ? 'Analyzing...' : 'Complete!'}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {Math.round(analysisProgress)}%
+                      </span>
+                    </div>
+                    <Progress 
+                      value={analysisProgress} 
+                      className="h-2 transition-all duration-500"
+                    />
+                    {analysisProgress === 100 && (
+                      <div className="flex items-center justify-center text-primary animate-bounce">
+                        <CheckCircle className="h-5 w-5 mr-2" />
+                        <span className="font-medium">Analysis Complete!</span>
+                      </div>
+                    )}
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Analyze Button */}
+          <Button 
+            onClick={analyzeImage} 
+            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+            disabled={isAnalyzing}
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                Analyzing with AI Vision...
+              </>
+            ) : (
+              <>
+                <Eye className="mr-3 h-6 w-6" />
+                Analyze Image with AI
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
+      {/* Analysis Results */}
+      {analysisResult && (
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-background via-background to-primary/5 animate-fade-in">
+          <CardContent className="p-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Eye className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-2xl font-semibold mb-2">Analysis Results</h3>
+              <p className="text-muted-foreground">
+                AI-powered insights about your image
+              </p>
+            </div>
+            
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl border p-6 space-y-4">
+              <div className="prose prose-sm max-w-none">
+                {analysisResult.replace(/\*/g, '').trim().split('\n').map((line, index) => {
+                  const trimmedLine = line.trim();
+                  if (!trimmedLine) return null;
+                  
+                  // Check if line starts with a number followed by )
+                  const isNumberedPoint = /^\d+\)/.test(trimmedLine);
+                  
+                  if (isNumberedPoint) {
+                    return (
+                      <div key={index} className="flex items-start space-x-3 p-4 rounded-lg bg-muted/30 border border-border/50 transition-all duration-300 hover:bg-muted/50 hover:border-primary/20">
+                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-xs font-medium text-primary">
+                            {trimmedLine.match(/^\d+/)?.[0]}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            {trimmedLine.replace(/^\d+\)\s*/, '')}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  } else if (trimmedLine.length > 0) {
+                    return (
+                      <div key={index} className="ml-8 text-muted-foreground">
+                        {trimmedLine}
+                      </div>
+                    );
+                  }
+                  return null;
+                }).filter(Boolean)}
               </div>
             </div>
-          )}
-        </div>
-      </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
