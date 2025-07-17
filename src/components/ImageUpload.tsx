@@ -161,122 +161,112 @@ const ImageUpload = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
-      {/* Upload Section */}
-      <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-background to-muted/20">
-        <CardContent className="p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 animate-pulse">
-              <ImageIcon className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-2xl font-semibold mb-2">Upload Your Image</h3>
-            <p className="text-muted-foreground">
-              Drag and drop or click to select an image for AI analysis
+    <div className="w-full max-w-4xl mx-auto space-y-8">
+      {/* Upload Section - Blended with page */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 animate-pulse">
+          <ImageIcon className="h-8 w-8 text-primary" />
+        </div>
+        <h3 className="text-2xl font-semibold mb-2">Upload Your Image</h3>
+        <p className="text-muted-foreground">
+          Drag and drop or click to select an image for AI analysis
+        </p>
+      </div>
+
+      <div
+        className={`relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 cursor-pointer group bg-background/50 backdrop-blur-sm ${
+          isDragOver 
+            ? 'border-primary bg-primary/5 scale-[1.02] shadow-lg' 
+            : 'border-muted-foreground/25 hover:border-primary hover:bg-background/80 hover:shadow-md'
+        }`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onClick={() => document.getElementById('file-input')?.click()}
+      >
+        <Input
+          id="file-input"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        />
+        
+        <div className="text-center space-y-4">
+          <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full transition-all duration-300 ${
+            isDragOver ? 'bg-primary text-primary-foreground scale-110' : 'bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground'
+          }`}>
+            <Upload className="h-10 w-10" />
+          </div>
+          
+          <div>
+            <p className="text-lg font-medium mb-1">
+              {isDragOver ? 'Drop your image here' : 'Click to upload or drag and drop'}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Supports JPG, PNG, GIF, WebP • Maximum 10MB
             </p>
           </div>
-
-          <div
-            className={`relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 cursor-pointer group ${
-              isDragOver 
-                ? 'border-primary bg-primary/5 scale-[1.02]' 
-                : 'border-muted-foreground/25 hover:border-primary hover:bg-muted/30'
-            }`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onClick={() => document.getElementById('file-input')?.click()}
-          >
-            <Input
-              id="file-input"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-            
-            <div className="text-center space-y-4">
-              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full transition-all duration-300 ${
-                isDragOver ? 'bg-primary text-primary-foreground scale-110' : 'bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground'
-              }`}>
-                <Upload className="h-10 w-10" />
-              </div>
-              
-              <div>
-                <p className="text-lg font-medium mb-1">
-                  {isDragOver ? 'Drop your image here' : 'Click to upload or drag and drop'}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Supports JPG, PNG, GIF, WebP • Maximum 10MB
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Image Preview and Analysis */}
       {selectedImage && (
         <div className="space-y-8 animate-fade-in">
-          {/* Image Preview */}
-          <Card className="overflow-hidden border-0 shadow-xl">
-            <CardContent className="p-0">
-              <div className="aspect-video bg-muted rounded-lg overflow-hidden">
-                <img 
-                  src={selectedImage} 
-                  alt="Selected preview" 
-                  className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Image Preview - Seamlessly integrated */}
+          <div className="aspect-video bg-background/30 backdrop-blur-sm rounded-xl overflow-hidden border border-border/20 shadow-lg">
+            <img 
+              src={selectedImage} 
+              alt="Selected preview" 
+              className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
+            />
+          </div>
           
-          {/* Analysis Progress */}
+          {/* Analysis Progress - Blended */}
           {isAnalyzing && (
-            <Card className="border-0 shadow-lg animate-scale-in">
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-center space-x-3">
-                    <div className="relative">
-                      <Cpu className="h-8 w-8 text-primary animate-pulse" />
-                      <Sparkles className="h-4 w-4 text-primary absolute -top-1 -right-1 animate-ping" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">AI Analysis in Progress</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Processing your image with advanced AI vision...
-                      </p>
-                    </div>
+            <div className="p-6 rounded-xl bg-background/50 backdrop-blur-sm border border-border/20 animate-scale-in">
+              <div className="space-y-6">
+                <div className="flex items-center justify-center space-x-3">
+                  <div className="relative">
+                    <Cpu className="h-8 w-8 text-primary animate-pulse" />
+                    <Sparkles className="h-4 w-4 text-primary absolute -top-1 -right-1 animate-ping" />
                   </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">
-                        {analysisProgress < 100 ? 'Analyzing...' : 'Complete!'}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {Math.round(analysisProgress)}%
-                      </span>
-                    </div>
-                    <Progress 
-                      value={analysisProgress} 
-                      className="h-2 transition-all duration-500"
-                    />
-                    {analysisProgress === 100 && (
-                      <div className="flex items-center justify-center text-primary animate-bounce">
-                        <CheckCircle className="h-5 w-5 mr-2" />
-                        <span className="font-medium">Analysis Complete!</span>
-                      </div>
-                    )}
+                  <div>
+                    <h3 className="text-lg font-semibold">AI Analysis in Progress</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Processing your image with advanced AI vision...
+                    </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">
+                      {analysisProgress < 100 ? 'Analyzing...' : 'Complete!'}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {Math.round(analysisProgress)}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={analysisProgress} 
+                    className="h-2 transition-all duration-500"
+                  />
+                  {analysisProgress === 100 && (
+                    <div className="flex items-center justify-center text-primary animate-bounce">
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                      <span className="font-medium">Analysis Complete!</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Analyze Button */}
+          {/* Analyze Button - Blended style */}
           <Button 
             onClick={analyzeImage} 
-            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] rounded-xl"
             disabled={isAnalyzing}
           >
             {isAnalyzing ? (
@@ -294,57 +284,55 @@ const ImageUpload = () => {
         </div>
       )}
 
-      {/* Analysis Results */}
+      {/* Analysis Results - Seamlessly integrated */}
       {analysisResult && (
-        <Card className="border-0 shadow-xl bg-gradient-to-br from-background via-background to-primary/5 animate-fade-in">
-          <CardContent className="p-8">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                <Eye className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-2">Analysis Results</h3>
-              <p className="text-muted-foreground">
-                AI-powered insights about your image
-              </p>
+        <div className="p-8 rounded-xl bg-background/30 backdrop-blur-sm border border-border/20 shadow-lg animate-fade-in">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+              <Eye className="h-8 w-8 text-primary" />
             </div>
-            
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl border p-6 space-y-4">
-              <div className="prose prose-sm max-w-none">
-                {analysisResult.replace(/\*/g, '').trim().split('\n').map((line, index) => {
-                  const trimmedLine = line.trim();
-                  if (!trimmedLine) return null;
-                  
-                  // Check if line starts with a number followed by )
-                  const isNumberedPoint = /^\d+\)/.test(trimmedLine);
-                  
-                  if (isNumberedPoint) {
-                    return (
-                      <div key={index} className="flex items-start space-x-3 p-4 rounded-lg bg-muted/30 border border-border/50 transition-all duration-300 hover:bg-muted/50 hover:border-primary/20">
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-xs font-medium text-primary">
-                            {trimmedLine.match(/^\d+/)?.[0]}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground">
-                            {trimmedLine.replace(/^\d+\)\s*/, '')}
-                          </p>
-                        </div>
+            <h3 className="text-2xl font-semibold mb-2">Analysis Results</h3>
+            <p className="text-muted-foreground">
+              AI-powered insights about your image
+            </p>
+          </div>
+          
+          <div className="bg-background/50 backdrop-blur-sm rounded-xl border border-border/30 p-6 space-y-4">
+            <div className="prose prose-sm max-w-none">
+              {analysisResult.replace(/\*/g, '').trim().split('\n').map((line, index) => {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) return null;
+                
+                // Check if line starts with a number followed by )
+                const isNumberedPoint = /^\d+\)/.test(trimmedLine);
+                
+                if (isNumberedPoint) {
+                  return (
+                    <div key={index} className="flex items-start space-x-3 p-4 rounded-lg bg-background/50 border border-border/50 transition-all duration-300 hover:bg-background/70 hover:border-primary/20">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-xs font-medium text-primary">
+                          {trimmedLine.match(/^\d+/)?.[0]}
+                        </span>
                       </div>
-                    );
-                  } else if (trimmedLine.length > 0) {
-                    return (
-                      <div key={index} className="ml-8 text-muted-foreground">
-                        {trimmedLine}
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">
+                          {trimmedLine.replace(/^\d+\)\s*/, '')}
+                        </p>
                       </div>
-                    );
-                  }
-                  return null;
-                }).filter(Boolean)}
-              </div>
+                    </div>
+                  );
+                } else if (trimmedLine.length > 0) {
+                  return (
+                    <div key={index} className="ml-8 text-muted-foreground">
+                      {trimmedLine}
+                    </div>
+                  );
+                }
+                return null;
+              }).filter(Boolean)}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
