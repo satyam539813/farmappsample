@@ -8,6 +8,7 @@ import { ShoppingCart, Star, Heart, Eye } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/contexts/CartContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 // Define a type for our product
 interface Product {
@@ -30,6 +31,7 @@ const FeaturedProducts = () => {
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
   const { toast } = useToast();
   const { addToCart } = useCart();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
 
   // Filter products based on active tab
   const filteredProducts = activeTab === "all" 
@@ -46,6 +48,14 @@ const FeaturedProducts = () => {
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+
+  const handleToggleFavorite = (product: Product) => {
+    if (isFavorite(product.id)) {
+      removeFromFavorites(product.id);
+    } else {
+      addToFavorites(product);
+    }
   };
 
   return (
@@ -112,9 +122,19 @@ const FeaturedProducts = () => {
                     <Button
                       size="icon"
                       variant="secondary"
-                      className="w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+                      className={`w-10 h-10 rounded-full shadow-lg transition-all duration-300 ${
+                        isFavorite(product.id) 
+                          ? 'bg-red-500 hover:bg-red-600 text-white' 
+                          : 'bg-white/90 hover:bg-white text-gray-700'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleFavorite(product);
+                      }}
                     >
-                      <Heart className="h-4 w-4" />
+                      <Heart className={`h-4 w-4 transition-all duration-300 ${
+                        isFavorite(product.id) ? 'fill-current scale-110' : ''
+                      }`} />
                     </Button>
                     <Button
                       size="icon"
